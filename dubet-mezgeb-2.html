@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>የዱቤ መዝገብ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0f4f2f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ዱቤ መዝገብ">
+<style>
+  :root {
+    --green: #1a7a4a;
+    --green-light: #25a866;
+    --green-dark: #0f4f2f;
+    --gold: #e8a020;
+    --gold-light: #f5c050;
+    --red: #c0392b;
+    --bg: #f4f1eb;
+    --white: #fff;
+    --text: #1a1a1a;
+    --muted: #888;
+    --border: #d8d0c0;
+    --card: #fff;
+    --shadow: 0 4px 24px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans Ethiopic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ========= LOGIN SCREEN ========= */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, var(--green-dark) 0%, var(--green) 60%, var(--green-light) 100%);
+    padding: 24px;
+  }
+  .login-logo {
+    font-size: 3rem;
+    margin-bottom: 8px;
+  }
+  .login-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--gold-light);
+    margin-bottom: 4px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .login-sub {
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 36px;
+    font-size: 1rem;
+    text-align: center;
+  }
+  .login-card {
+    background: white;
+    border-radius: 20px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  }
+  .role-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 4px;
+  }
+  .role-tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .role-tab.active {
+    background: var(--green);
+    color: white;
+    box-shadow: 0 2px 8px rgba(26,122,74,0.3);
+  }
+  .input-group {
+    margin-bottom: 16px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin-bottom: 6px;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+    background: var(--bg);
+  }
+  .input-group input:focus {
+    border-color: var(--green);
+    background: white;
+  }
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--green), var(--green-light));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn-login:hover { opacity: 0.92; transform: translateY(-1px); }
+  .login-err {
+    color: var(--red);
+    font-size: 0.88rem;
+    margin-top: 10px;
+    text-align: center;
+    display: none;
+  }
+
+  /* ========= MAIN APP ========= */
+  #app { display: none; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  }
+  .header-title {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--gold-light);
+  }
+  .header-role {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+  .btn-logout {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+  /* Nav */
+  .nav {
+    background: white;
+    display: flex;
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 14px 12px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-btn.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+  }
+
+  /* Content */
+  .content { padding: 16px; max-width: 700px; margin: 0 auto; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Summary boxes */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .summary-box {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .summary-box .label { font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; }
+  .summary-box .value { font-size: 1.6rem; font-weight: 900; }
+  .summary-box.total .value { color: var(--red); }
+  .summary-box.customers .value { color: var(--green); }
+
+  /* Form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin-bottom: 5px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border 0.2s;
+    background: var(--bg);
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--green);
+    background: white;
+  }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--green), var(--green-light));
+    color: white;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-danger {
+    background: var(--red);
+    color: white;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+  .btn-pay {
+    background: var(--gold);
+    color: white;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+  .btn-sm {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+
+  /* Customer list */
+  .customer-item {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: white;
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .customer-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); border-color: var(--green-light); }
+  .customer-name { font-weight: 700; font-size: 1rem; color: var(--green-dark); }
+  .customer-phone { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+  .customer-debt {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--red);
+    white-space: nowrap;
+  }
+  .debt-zero { color: var(--green); }
+  .customer-actions { display: flex; gap: 6px; }
+
+  /* Transaction table */
+  .tx-table { width: 100%; border-collapse: collapse; }
+  .tx-table th {
+    background: var(--green-dark);
+    color: white;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .tx-table th:first-child { border-radius: 8px 0 0 0; }
+  .tx-table th:last-child { border-radius: 0 8px 0 0; }
+  .tx-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    vertical-align: middle;
+  }
+  .tx-table tr:last-child td { border-bottom: none; }
+  .tx-table tr:nth-child(even) td { background: #f9f7f2; }
+  .type-debt { color: var(--red); font-weight: 700; }
+  .type-pay { color: var(--green); font-weight: 700; }
+
+  /* Detail view */
+  .detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .btn-back {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--green-dark);
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .detail-name { font-size: 1.3rem; font-weight: 900; color: var(--green-dark); }
+  .detail-phone { font-size: 0.88rem; color: var(--muted); }
+  .balance-big {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+    border-radius: 14px;
+    border: 2px solid #f8c0c0;
+    margin-bottom: 16px;
+  }
+  .balance-big.paid {
+    background: linear-gradient(135deg, #f0fff6, #d0f5e0);
+    border-color: #a0e0c0;
+  }
+  .balance-big .b-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+  .balance-big .b-amount { font-size: 2.4rem; font-weight: 900; color: var(--red); }
+  .balance-big.paid .b-amount { color: var(--green); }
+  .balance-big .b-date { font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .empty .emoji { font-size: 3rem; margin-bottom: 12px; }
+
+  /* Search */
+  .search-input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%23888' viewBox='0 0 24 24'%3E%3Cpath d='M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z' stroke='%23888' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 14px center;
+    margin-bottom: 12px;
+    transition: border 0.2s;
+  }
+  .search-input:focus { border-color: var(--green); }
+
+  /* Customer view badge */
+  .view-notice {
+    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    color: white;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .view-notice strong { color: var(--gold-light); font-size: 1.1rem; display: block; margin-bottom: 4px; }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .balance-big .b-amount { font-size: 1.8rem; }
+    .tx-table { font-size: 0.8rem; }
+    .tx-table th, .tx-table td { padding: 8px; }
+  }
+
+  .tag-new {
+    background: var(--gold);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    margin-left: 8px;
+  }
+  .section-hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ======= LOGIN ======= -->
+<div id="loginScreen">
+  <div class="login-logo">📒</div>
+  <div class="login-title">የዱቤ መዝገብ</div>
+  <div class="login-sub">የንግድ ዱቤ አስተዳደር ስርዓት</div>
+  <button id="installBtnLogin" onclick="installApp()" style="display:none; background:var(--gold); border:none; color:white; padding:10px 24px; border-radius:12px; font-family:'Noto Sans Ethiopic',sans-serif; font-size:0.95rem; cursor:pointer; font-weight:700; margin-bottom:16px;">⬇️ አፕ Install አድርግ</button>
+
+  <div class="login-card">
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="setRole('seller')">🏪 ሻጭ</button>
+      <button class="role-tab" onclick="setRole('customer')">👤 ደንበኛ</button>
+    </div>
+
+    <div class="input-group">
+      <label>የተጠቃሚ ስም</label>
+      <input type="text" id="loginUser" placeholder="ስምዎን ያስገቡ" />
+    </div>
+    <div class="input-group">
+      <label>የሚስጥር ቁጥር (PIN)</label>
+      <input type="password" id="loginPin" placeholder="PIN ያስገቡ" inputmode="numeric" maxlength="6" />
+    </div>
+    <button class="btn-login" onclick="doLogin()">ግባ →</button>
+    <div class="login-err" id="loginErr">❌ የተጠቃሚ ስም ወይም PIN ትክክል አይደለም</div>
+    <div style="margin-top:16px; font-size:0.78rem; color:#aaa; text-align:center;">
+      ሻጭ: admin ስም + PIN &nbsp;|&nbsp; ደንበኛ: ስምዎ + PIN<br>
+      <span style="color:#f5c050; font-size:0.75rem;">⚠️ ነባሪ የሻጭ PIN: 123456 — ከገቡ በኋላ ይቀይሩ</span>
+    </div>
+    <div style="margin-top:10px; text-align:center;">
+      <button onclick="resetAndReload()" style="background:none;border:none;color:#bbb;font-family:inherit;font-size:0.75rem;cursor:pointer;text-decoration:underline;">
+        🔄 አይሰራም? ይህን ይጫኑ (Data Reset)
+      </button>
+    </div>
+    <div style="margin-top:12px; text-align:center;">
+      <button onclick="showRegister()" style="background:none;border:none;color:var(--green);font-family:inherit;font-size:0.88rem;cursor:pointer;font-weight:600;text-decoration:underline;">
+        👤 አዲስ ደንበኛ ነኝ — ለመመዝገብ እዚህ ይጫኑ
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= APP ======= -->
+<div id="app">
+  <div class="header">
+    <div>
+      <div class="header-title">📒 የዱቤ መዝገብ</div>
+      <div class="header-role" id="headerRole"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button id="installBtn" onclick="installApp()" style="display:none; background:var(--gold); border:none; color:white; padding:7px 12px; border-radius:10px; font-family:inherit; font-size:0.82rem; cursor:pointer; font-weight:700;">⬇️ Install</button>
+      <button class="btn-logout" onclick="logout()">ውጣ</button>
+    </div>
+  </div>
+
+  <div class="nav" id="mainNav">
+    <button class="nav-btn active" onclick="showTab('home')">🏠 ዋና</button>
+    <button class="nav-btn" onclick="showTab('customers')" id="navCustomers">👥 ደንበኞች</button>
+    <button class="nav-btn" onclick="showTab('add')" id="navAdd">➕ ጨምር</button>
+    <button class="nav-btn" onclick="showTab('report')">📊 ሪፖርት</button>
+    <button class="nav-btn" onclick="showTab('settings')" id="navSettings">⚙️ ቅንብር</button>
+  </div>
+
+  <div class="content">
+
+    <!-- HOME TAB -->
+    <div id="tab-home">
+      <div class="summary-grid">
+        <div class="summary-box total">
+          <div class="label">ጠቅላላ እዳ (ብር)</div>
+          <div class="value" id="totalDebt">0</div>
+        </div>
+        <div class="summary-box customers">
+          <div class="label">ደንበኞች ብዛት</div>
+          <div class="value" id="totalCustomers">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚡ ቅርብ ጊዜ ግብይቶች</div>
+        <div id="recentTx">
+          <div class="empty"><div class="emoji">📋</div>ምንም ግብይት የለም</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS TAB -->
+    <div id="tab-customers" class="section-hidden">
+      <div class="card">
+        <div class="card-title">👥 ሁሉም ደንበኞች</div>
+        <input type="text" class="search-input" placeholder="ደንበኛ ፈልግ..." oninput="renderCustomers(this.value)" />
+        <div id="customerList"></div>
+      </div>
+    </div>
+
+    <!-- ADD TAB -->
+    <div id="tab-add" class="section-hidden">
+
+      <!-- Type selector cards -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div id="typeCardDebt" onclick="selectTxType('debt')"
+          style="background:linear-gradient(135deg,#fff5f5,#ffe0e0);border:2px solid #e74c3c;border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+          <div style="font-size:1.8rem;">🔴</div>
+          <div style="font-weight:800;color:#c0392b;margin-top:4px;">ዱቤ</div>
+          <div style="font-size:0.75rem;color:#888;">እቃ ወሰደ</div>
+        </div>
+        <div id="typeCardPay" onclick="selectTxType('payment')"
+          style="background:#f0f0f0;border:2px solid #ccc;border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+          <div style="font-size:1.8rem;">🟢</div>
+          <div style="font-weight:800;color:#555;margin-top:4px;">ክፍያ</div>
+          <div style="font-size:0.75rem;color:#888;">ገንዘብ ከፈለ</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" id="addFormTitle">🔴 ዱቤ ምዝገባ</div>
+        <input type="hidden" id="selType" value="debt" />
+
+        <div class="form-group">
+          <label>👤 ደንበኛ ይምረጡ</label>
+          <select id="selCustomer" style="font-size:1rem;padding:13px;">
+            <option value="">-- ደንበኛ ይምረጡ --</option>
+          </select>
+        </div>
+
+        <div id="debtFields">
+          <div class="form-group">
+            <label>📦 የእቃ ስም</label>
+            <input type="text" id="txItem" placeholder="ምሳሌ: ዱቄት 50ኪ.ግ" />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="form-group">
+              <label>ብዛት</label>
+              <input type="number" id="txQty" placeholder="1" min="1" oninput="calcTotal()" inputmode="decimal" />
+            </div>
+            <div class="form-group">
+              <label>ዋጋ/ነፍስ (ብር)</label>
+              <input type="number" id="txPrice" placeholder="0" oninput="calcTotal()" inputmode="decimal" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label id="totalLabel">💰 ጠቅላላ ብር</label>
+          <input type="number" id="txTotal" placeholder="0" inputmode="decimal"
+            style="font-size:1.4rem;font-weight:800;color:var(--green-dark);padding:14px;" />
+        </div>
+
+        <div class="form-group">
+          <label>📝 ማስታወሻ (አማራጭ)</label>
+          <input type="text" id="txNote" placeholder="ተጨማሪ ማስታወሻ..." />
+        </div>
+
+        <button class="btn btn-primary" onclick="addTransaction()"
+          style="width:100%;font-size:1.1rem;padding:15px;" id="addTxBtn">
+          ✅ ዱቤ አስቀምጥ
+        </button>
+        <div id="txSuccess" style="display:none;margin-top:12px;padding:12px;background:#e8f8ee;border-radius:10px;color:var(--green);font-weight:700;text-align:center;">
+          ✅ በተሳካ ሁኔታ ተቀምጧል!
+        </div>
+      </div>
+
+      <!-- Add New Customer -->
+      <div class="card">
+        <div class="card-title">👤 አዲስ ደንበኛ ጨምር</div>
+        <div class="form-group">
+          <label>ሙሉ ስም *</label>
+          <input type="text" id="newName" placeholder="አበበ ከበደ" />
+        </div>
+        <div class="form-group">
+          <label>ስልክ ቁጥር</label>
+          <input type="text" id="newPhone" placeholder="09..." inputmode="numeric" />
+        </div>
+        <div class="form-group">
+          <label>PIN (4-6 ቁጥር) — ባዶ ከቀረ ስልክ መጨረሻ ይወሰዳል</label>
+          <input type="password" id="newCustPin" placeholder="ለምሳሌ: 1234" inputmode="numeric" maxlength="6" />
+        </div>
+        <button class="btn btn-primary" onclick="addCustomer()" style="width:100%;">➕ ደንበኛ ጨምር</button>
+        <div id="custSuccess" style="display:none;margin-top:10px;padding:12px;background:#e8f8ee;border-radius:10px;color:var(--green);font-weight:700;text-align:center;">✅ ደንበኛ ተጨምሯል!</div>
+      </div>
+    </div>
+
+    <!-- REPORT TAB -->
+    <div id="tab-report" class="section-hidden">
+      <div class="card">
+        <div class="card-title">📊 የዱቤ ሪፖርት</div>
+        <div id="reportList"></div>
+      </div>
+    </div>
+
+    <!-- DETAIL VIEW -->
+    <div id="tab-detail" class="section-hidden">
+      <div class="detail-header">
+        <button class="btn-back" onclick="backToCustomers()">← ተመለስ</button>
+        <div style="flex:1;">
+          <div class="detail-name" id="detailName"></div>
+          <div class="detail-phone" id="detailPhone"></div>
+        </div>
+        <button onclick="openHistory()" style="background:var(--bg);border:1px solid var(--border);color:var(--green-dark);font-family:inherit;font-size:0.82rem;padding:7px 12px;border-radius:10px;cursor:pointer;font-weight:600;">🕓 ታሪክ / መልስ</button>
+      </div>
+      <div id="detailBalance"></div>
+
+      <!-- Telegram Share -->
+      <button onclick="shareTelegram()" style="width:100%;margin-bottom:14px;padding:13px;background:linear-gradient(135deg,#0088cc,#229ED9);color:white;border:none;border-radius:12px;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/></svg>
+        📨 በቴሌግራም ላክ
+      </button>
+
+      <!-- Pay button for seller -->
+      <div id="paySection" class="card" style="margin-bottom:16px;">
+        <div class="card-title">💰 ክፍያ ምዝገባ</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>የክፍያ መጠን (ብር)</label>
+            <input type="number" id="payAmount" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label>ማስታወሻ</label>
+            <input type="text" id="payNote" placeholder="ምሳሌ: ሙሉ ክፍያ" />
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="recordPayment()">✅ ክፍያ አስቀምጥ</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 የዱቤ ዝርዝር</div>
+        <div id="detailTx"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB (seller only) -->
+    <div id="tab-settings" class="section-hidden">
+      <!-- Change seller password -->
+      <div class="card">
+        <div class="card-title">🔐 የሻጭ Password ቀይር</div>
+        <div class="form-group">
+          <label>አሁን ያለው PIN</label>
+          <input type="password" id="oldPin" placeholder="አሁን ያለው PIN" inputmode="numeric" maxlength="6" />
+        </div>
+        <div class="form-group">
+          <label>አዲስ PIN</label>
+          <input type="password" id="newPin" placeholder="አዲስ PIN (4-6 ቁጥር)" inputmode="numeric" maxlength="6" />
+        </div>
+        <div class="form-group">
+          <label>አዲስ PIN ደጋግም</label>
+          <input type="password" id="newPin2" placeholder="ደጋግም" inputmode="numeric" maxlength="6" />
+        </div>
+        <button class="btn btn-primary" onclick="changeSellerPin()">✅ PIN ቀይር</button>
+        <div id="pinMsg" style="display:none; margin-top:10px; font-weight:700;"></div>
+      </div>
+
+      <!-- Manage customers (delete) -->
+      <div class="card">
+        <div class="card-title">👥 ደንበኞች አስተዳደር</div>
+        <div id="settingsCustList"></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMER VIEW (read-only) -->
+    <div id="tab-mydebt" class="section-hidden">
+      <div class="view-notice">
+        <strong id="myName"></strong>
+        👋 ሰላም! ከዚህ በታች የዱቤ ዝርዝርዎን ይመልከቱ
+      </div>
+      <div id="myBalance"></div>
+      <div class="card">
+        <div class="card-title">📋 የዱቤ ዝርዝር</div>
+        <div id="myTxList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EDIT TRANSACTION MODAL -->
+<div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:998;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:white;border-radius:20px;padding:28px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,0.3);">
+    <h2 style="font-family:'Noto Sans Ethiopic',sans-serif;color:var(--green-dark);margin-bottom:20px;font-size:1.1rem;">✏️ ግብይት አርም</h2>
+    <input type="hidden" id="editTxId" />
+    <div class="form-grid">
+      <div class="form-group">
+        <label>አይነት</label>
+        <select id="editType">
+          <option value="debt">🔴 ዱቤ</option>
+          <option value="payment">🟢 ክፍያ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>ቀን</label>
+        <input type="date" id="editDate" />
+      </div>
+      <div class="form-group">
+        <label>የእቃ ስም</label>
+        <input type="text" id="editItem" placeholder="ዱቄት 50ኪ.ግ" />
+      </div>
+      <div class="form-group">
+        <label>ብዛት</label>
+        <input type="number" id="editQty" placeholder="1" oninput="calcEditTotal()" />
+      </div>
+      <div class="form-group">
+        <label>ዋጋ/ነፍስ (ብር)</label>
+        <input type="number" id="editPrice" placeholder="0" oninput="calcEditTotal()" />
+      </div>
+      <div class="form-group">
+        <label>ጠቅላላ (ብር)</label>
+        <input type="number" id="editTotal" placeholder="0" />
+      </div>
+      <div class="form-group full">
+        <label>ማስታወሻ</label>
+        <input type="text" id="editNote" placeholder="ማስታወሻ..." />
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="saveEdit()">✅ አስቀምጥ</button>
+      <button class="btn" style="flex:1;background:var(--bg);color:var(--text);" onclick="closeEdit()">ሰርዝ</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY / UNDO PANEL -->
+<div id="historyPanel" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:998;align-items:flex-end;justify-content:center;padding:0;">
+  <div style="background:white;border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:500px;max-height:80vh;overflow-y:auto;box-shadow:0 -4px 40px rgba(0,0,0,0.2);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-family:'Noto Sans Ethiopic',sans-serif;color:var(--green-dark);font-size:1.1rem;">🕓 የሰረዙ ዝርዝር (Undo)</h2>
+      <button onclick="closeHistory()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);">✕</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div id="registerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:white; border-radius:20px; padding:28px; width:100%; max-width:380px; box-shadow:0 8px 40px rgba(0,0,0,0.3);">
+    <h2 style="font-family:'Noto Sans Ethiopic',sans-serif; color:var(--green-dark); margin-bottom:4px; font-size:1.2rem;">👤 አዲስ ደንበኛ ምዝገባ</h2>
+    <p style="font-size:0.82rem; color:var(--muted); margin-bottom:20px;">ይህ መዝገብ ሻጭ እስኪያረጋግጥ ይጠብቁ</p>
+    <div class="input-group">
+      <label>ሙሉ ስም *</label>
+      <input type="text" id="regName" placeholder="አበበ ከበደ" />
+    </div>
+    <div class="input-group">
+      <label>ስልክ ቁጥር *</label>
+      <input type="text" id="regPhone" placeholder="09..." inputmode="numeric" />
+    </div>
+    <div class="input-group">
+      <label>የሚስጥር PIN (4-6 ቁጥር) *</label>
+      <input type="password" id="regPin" placeholder="የሚስጥር ቁጥር" inputmode="numeric" maxlength="6" />
+    </div>
+    <div style="display:flex; gap:10px; margin-top:4px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="doRegister()">✅ ተመዝገብ</button>
+      <button class="btn" style="flex:1; background:var(--bg); color:var(--text);" onclick="closeRegister()">ሰርዝ</button>
+    </div>
+    <div id="regMsg" style="display:none; margin-top:12px; font-weight:700; font-size:0.88rem; text-align:center;"></div>
+  </div>
+</div>
+
+<script>
+// ========== PIN HASHING ==========
+async function hashPin(pin) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dubet_salt_v1_' + pin));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ========== DATA ==========
+const SELLER_USER = 'admin';
+
+function resetAndReload() {
+  if (confirm('⚠️ ሁሉም data ይጠፋል። እርግጠኛ ነዎት?\nአዎ ከተቀበሉ app ዳግም ይጀምራል።')) {
+    localStorage.removeItem('dubet_db_v2');
+    location.reload();
+  }
+}
+
+// Pre-computed SHA-256 hashes: hashPin(pin) = SHA256("dubet_salt_v1_" + pin)
+// 123456 → c23ff6a364cb770d46c7e380beaa555d92603d065780fd08d1c9e9a830b8d60d
+// 5678   → 94213cdb94026505c4b16daf96c1b3cb067661a0677a61ec09b2628f2102fe61
+// 6789   → 30af3d65fdda980628704497138fdffed0eb5bdd7e0951ac3db0a92481330444
+
+let db = JSON.parse(localStorage.getItem('dubet_db_v2') || 'null') || {
+  sellerPinHash: 'c23ff6a364cb770d46c7e380beaa555d92603d065780fd08d1c9e9a830b8d60d',
+  customers: [
+    { id: 'c1', name: 'አለሙ ጎሳ', phone: '0912345678', pinHash: '94213cdb94026505c4b16daf96c1b3cb067661a0677a61ec09b2628f2102fe61' },
+    { id: 'c2', name: 'ሮማን ተፈሪ', phone: '0923456789', pinHash: '30af3d65fdda980628704497138fdffed0eb5bdd7e0951ac3db0a92481330444' },
+  ],
+  transactions: [
+    { id: 't1', customerId: 'c1', type: 'debt', item: 'ዱቄት 50ኪ.ግ', qty: 2, price: 800, total: 1600, note: '', date: '2024-05-10' },
+    { id: 't2', customerId: 'c1', type: 'debt', item: 'ዘይት 5ሊ', qty: 1, price: 550, total: 550, note: '', date: '2024-05-12' },
+    { id: 't3', customerId: 'c2', type: 'debt', item: 'ስኳር 10ኪ.ግ', qty: 3, price: 300, total: 900, note: '', date: '2024-05-13' },
+    { id: 't4', customerId: 'c1', type: 'payment', item: '', qty: 1, price: 500, total: 500, note: 'ከፊል ክፍያ', date: '2024-05-14' },
+  ]
+};
+
+// ========== MIGRATION: ቀደምት plain PIN ያለው data → hash ==========
+async function migrateAndInit() {
+  let changed = false;
+  // Old sellerPin (plain text) → hash
+  if (db.sellerPin && !db.sellerPinHash) {
+    db.sellerPinHash = await hashPin(db.sellerPin);
+    delete db.sellerPin;
+    changed = true;
+  }
+  // Old customer pin (plain text) → hash
+  for (const c of db.customers) {
+    if (!c.pinHash) {
+      const plain = c._tempPin || c.pin || '1234';
+      c.pinHash = await hashPin(plain);
+      delete c._tempPin;
+      delete c.pin;
+      changed = true;
+    }
+  }
+  if (changed) saveDb();
+}
+
+let currentRole = 'seller';
+let currentCustomerId = null;
+let detailCustomerId = null;
+let activeTab = 'home';
+
+function saveDb() {
+  localStorage.setItem('dubet_db_v2', JSON.stringify(db));
+}
+
+// ========== REGISTER MODAL ==========
+function showRegister() {
+  document.getElementById('registerModal').style.display = 'flex';
+  document.getElementById('regMsg').style.display = 'none';
+  ['regName','regPhone','regPin'].forEach(id => document.getElementById(id).value = '');
+}
+function closeRegister() {
+  document.getElementById('registerModal').style.display = 'none';
+}
+async function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const pin = document.getElementById('regPin').value.trim();
+  const msg = document.getElementById('regMsg');
+
+  if (!name || !phone || !pin) {
+    msg.style.display = 'block'; msg.style.color = 'var(--red)';
+    msg.textContent = '❌ ሁሉንም ያስገቡ'; return;
+  }
+  if (pin.length < 4) {
+    msg.style.display = 'block'; msg.style.color = 'var(--red)';
+    msg.textContent = '❌ PIN ቢያንስ 4 ቁጥር ይሁን'; return;
+  }
+  if (db.customers.find(c => c.phone === phone)) {
+    msg.style.display = 'block'; msg.style.color = 'var(--red)';
+    msg.textContent = '❌ ይህ ስልክ ቀደም ብሎ ተመዝግቧል'; return;
+  }
+
+  const rPinHash = await hashPin(pin);
+  db.customers.push({ id: uid(), name, phone, pinHash: rPinHash });
+  saveDb();
+  msg.style.display = 'block'; msg.style.color = 'var(--green)';
+  msg.textContent = '✅ ምዝገባ ተሳክቷል! አሁን መግባት ይችላሉ።';
+  setTimeout(() => closeRegister(), 2000);
+}
+
+// ========== AUTH ==========
+function setRole(role) {
+  currentRole = role;
+  document.querySelectorAll('.role-tab').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+async function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pin = document.getElementById('loginPin').value.trim();
+  const errEl = document.getElementById('loginErr');
+  errEl.style.display = 'none';
+  if (!pin) { errEl.style.display='block'; errEl.textContent='❌ PIN ያስገቡ'; return; }
+
+  // Ensure migration done before comparing
+  await migrateAndInit();
+  const pinH = await hashPin(pin);
+
+  if (currentRole === 'seller') {
+    if (user.toLowerCase() === SELLER_USER && pinH === db.sellerPinHash) {
+      enterApp('seller', null);
+    } else {
+      errEl.style.display = 'block';
+      errEl.textContent = '❌ የተጠቃሚ ስም ወይም PIN ትክክል አይደለም';
+    }
+  } else {
+    const cust = db.customers.find(ct =>
+      ct.name.toLowerCase().includes(user.toLowerCase()) && ct.pinHash === pinH
+    );
+    if (cust) {
+      enterApp('customer', cust.id);
+    } else {
+      errEl.style.display = 'block';
+      errEl.textContent = '❌ ስም ወይም PIN ትክክል አይደለም';
+    }
+  }
+}
+
+document.getElementById('loginPin').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+function enterApp(role, custId) {
+  currentRole = role;
+  currentCustomerId = custId;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  if (role === 'seller') {
+    document.getElementById('headerRole').textContent = '🏪 ሻጭ - ' + SELLER_USER;
+    document.getElementById('navCustomers').style.display = '';
+    document.getElementById('navAdd').style.display = '';
+    document.getElementById('navSettings').style.display = '';
+    document.getElementById('mainNav').style.display = 'flex';
+    showTab('home');
+  } else {
+    const cust = db.customers.find(c => c.id === custId);
+    document.getElementById('headerRole').textContent = '👤 ' + cust.name;
+    // Hide entire nav for customer — they only see their debt
+    document.getElementById('mainNav').style.display = 'none';
+    showCustomerView(custId);
+  }
+}
+
+function logout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPin').value = '';
+  currentRole = 'seller';
+  document.querySelectorAll('.role-tab').forEach((b,i) => b.classList.toggle('active', i===0));
+}
+
+// ========== TABS ==========
+function showTab(tab) {
+  activeTab = tab;
+  ['home','customers','add','report','detail','mydebt','settings'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('section-hidden', t !== tab);
+  });
+  document.querySelectorAll('.nav-btn').forEach((b) => {
+    b.classList.toggle('active', b.getAttribute('onclick') === `showTab('${tab}')`);
+  });
+
+  if (tab === 'home') renderHome();
+  if (tab === 'customers') renderCustomers();
+  if (tab === 'add') renderAddForm();
+  if (tab === 'report') renderReport();
+  if (tab === 'settings') renderSettings();
+}
+
+// ========== HELPERS ==========
+function getCustomerDebt(custId) {
+  return db.transactions
+    .filter(t => t.customerId === custId)
+    .reduce((sum, t) => sum + (t.type === 'debt' ? t.total : -t.total), 0);
+}
+function fmt(n) { return Number(n).toLocaleString('am-ET') + ' ብር'; }
+function today() { return new Date().toISOString().split('T')[0]; }
+function uid() { return 'x' + Math.random().toString(36).substr(2, 9); }
+
+// ========== HOME ==========
+function renderHome() {
+  const total = db.customers.reduce((s, c) => s + Math.max(0, getCustomerDebt(c.id)), 0);
+  document.getElementById('totalDebt').textContent = total.toLocaleString();
+  document.getElementById('totalCustomers').textContent = db.customers.length;
+
+  const recent = [...db.transactions].reverse().slice(0, 8);
+  const ctr = document.getElementById('recentTx');
+  if (!recent.length) {
+    ctr.innerHTML = '<div class="empty"><div class="emoji">📋</div>ምንም ግብይት የለም</div>';
+    return;
+  }
+  ctr.innerHTML = `<table class="tx-table">
+    <thead><tr><th>ደንበኛ</th><th>እቃ</th><th>አይነት</th><th>ብር</th><th>ቀን</th></tr></thead>
+    <tbody>${recent.map(t => {
+      const cust = db.customers.find(c => c.id === t.customerId);
+      return `<tr>
+        <td>${cust ? cust.name : '?'}</td>
+        <td>${t.item || '-'}</td>
+        <td class="${t.type==='debt'?'type-debt':'type-pay'}">${t.type==='debt'?'🔴 ዱቤ':'🟢 ክፍያ'}</td>
+        <td>${t.total.toLocaleString()}</td>
+        <td>${t.date}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+// ========== CUSTOMERS ==========
+function renderCustomers(search = '') {
+  const list = document.getElementById('customerList');
+  let custs = db.customers;
+  if (search) custs = custs.filter(c => c.name.includes(search) || c.phone.includes(search));
+  if (!custs.length) {
+    list.innerHTML = '<div class="empty"><div class="emoji">👤</div>ደንበኛ አልተገኘም</div>';
+    return;
+  }
+  list.innerHTML = custs.map(c => {
+    const debt = getCustomerDebt(c.id);
+    return `<div class="customer-item" onclick="showDetail('${c.id}')">
+      <div>
+        <div class="customer-name">${c.name}</div>
+        <div class="customer-phone">📞 ${c.phone}</div>
+      </div>
+      <div class="customer-debt ${debt<=0?'debt-zero':''}">${debt>0?fmt(debt):'✅ ጸዳ'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ========== DETAIL ==========
+function showDetail(custId) {
+  detailCustomerId = custId;
+  const cust = db.customers.find(c => c.id === custId);
+  document.getElementById('detailName').textContent = cust.name;
+  document.getElementById('detailPhone').textContent = '📞 ' + cust.phone;
+  showTab('detail');
+  renderDetail();
+}
+
+function renderDetail() {
+  const custId = detailCustomerId;
+  const debt = getCustomerDebt(custId);
+  document.getElementById('detailBalance').innerHTML = `<div class="balance-big ${debt<=0?'paid':''}">
+    <div class="b-label">አጠቃላይ እዳ</div>
+    <div class="b-amount">${debt>0?debt.toLocaleString()+' ብር':'✅ ዕዳ የለም'}</div>
+  </div>`;
+  document.getElementById('paySection').style.display = (currentRole === 'seller') ? '' : 'none';
+
+  const txs = db.transactions.filter(t => t.customerId === custId).reverse();
+  const dtx = document.getElementById('detailTx');
+  if (!txs.length) {
+    dtx.innerHTML = '<div class="empty"><div class="emoji">📋</div>ምንም ዝርዝር የለም</div>';
+    return;
+  }
+  dtx.innerHTML = `<table class="tx-table">
+    <thead><tr><th>ቀን</th><th>እቃ</th><th>ብዛት</th><th>ዋጋ</th><th>ድምር</th><th>አይነት</th>${currentRole==='seller'?'<th style="min-width:90px"></th>':''}</tr></thead>
+    <tbody>${txs.map(t => `<tr>
+      <td>${t.date}</td>
+      <td>${t.item||'-'} ${t.note?'<br><small style="color:#aaa">'+t.note+'</small>':''}</td>
+      <td>${t.qty||'-'}</td>
+      <td>${t.price?t.price.toLocaleString():'-'}</td>
+      <td>${t.total.toLocaleString()}</td>
+      <td class="${t.type==='debt'?'type-debt':'type-pay'}">${t.type==='debt'?'🔴':'🟢'}</td>
+      ${currentRole==='seller'?`<td style="white-space:nowrap">
+        <button class="btn btn-sm" style="background:#e8f5ee;color:var(--green-dark);margin-right:4px;" onclick="openEdit('${t.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteTx('${t.id}')">🗑</button>
+      </td>`:''}
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+function backToCustomers() { showTab('customers'); }
+
+function shareTelegram() {
+  const custId = detailCustomerId;
+  const cust = db.customers.find(c => c.id === custId);
+  if (!cust) return;
+  const debt = getCustomerDebt(custId);
+  const txs = db.transactions.filter(t => t.customerId === custId).reverse().slice(0, 5);
+
+  let msg = `📒 *የዱቤ ዝርዝር*
+`;
+  msg += `👤 ደንበኛ: ${cust.name}
+`;
+  msg += `📞 ስልክ: ${cust.phone}
+`;
+  msg += `━━━━━━━━━━━━━━
+`;
+  if (debt > 0) {
+    msg += `💳 አጠቃላይ ዕዳ: *${debt.toLocaleString()} ብር*
+`;
+  } else {
+    msg += `✅ ዕዳ የለም
+`;
+  }
+  if (txs.length) {
+    msg += `━━━━━━━━━━━━━━
+📋 ቅርብ ጊዜ ዝርዝር:
+`;
+    txs.forEach(t => {
+      msg += `${t.type==='debt'?'🔴':'🟢'} ${t.date} | ${t.item||'ክፍያ'} | ${t.total.toLocaleString()} ብር
+`;
+    });
+  }
+  msg += `━━━━━━━━━━━━━━
+🏪 የዱቤ መዝገብ`;
+
+  const url = 'https://t.me/share/url?url=%20&text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+}
+
+function recordPayment() {
+  const amt = parseFloat(document.getElementById('payAmount').value);
+  const note = document.getElementById('payNote').value;
+  if (!amt || amt <= 0) { alert('የክፍያ መጠን ያስገቡ'); return; }
+  db.transactions.push({ id: uid(), customerId: detailCustomerId, type: 'payment', item: 'ክፍያ', qty: 1, price: amt, total: amt, note: note || 'ክፍያ', date: today() });
+  saveDb();
+  document.getElementById('payAmount').value = '';
+  document.getElementById('payNote').value = '';
+  renderDetail();
+}
+
+function deleteTx(txId) {
+  if (!confirm('ይህን ግብይት ይሰርዙ?\n(Undo ከ "🕓 Undo" ቁልፍ ይቻላል)')) return;
+  const tx = db.transactions.find(t => t.id === txId);
+  // Save to trash history
+  if (!db.trash) db.trash = [];
+  db.trash.unshift({ ...tx, deletedAt: new Date().toISOString(), deletedFromCustomer: detailCustomerId });
+  if (db.trash.length > 50) db.trash = db.trash.slice(0, 50);
+  db.transactions = db.transactions.filter(t => t.id !== txId);
+  saveDb();
+  renderDetail();
+  showToast('🗑 ተሰርዟል — Undo ለመመለስ "🕓 Undo" ይጫኑ');
+}
+
+// ========== EDIT TRANSACTION ==========
+function openEdit(txId) {
+  const tx = db.transactions.find(t => t.id === txId);
+  if (!tx) return;
+  document.getElementById('editTxId').value = txId;
+  document.getElementById('editType').value = tx.type;
+  document.getElementById('editDate').value = tx.date;
+  document.getElementById('editItem').value = tx.item || '';
+  document.getElementById('editQty').value = tx.qty || '';
+  document.getElementById('editPrice').value = tx.price || '';
+  document.getElementById('editTotal').value = tx.total || '';
+  document.getElementById('editNote').value = tx.note || '';
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEdit() {
+  document.getElementById('editModal').style.display = 'none';
+}
+
+function calcEditTotal() {
+  const qty = parseFloat(document.getElementById('editQty').value) || 0;
+  const price = parseFloat(document.getElementById('editPrice').value) || 0;
+  if (qty && price) document.getElementById('editTotal').value = qty * price;
+}
+
+function saveEdit() {
+  const txId = document.getElementById('editTxId').value;
+  const total = parseFloat(document.getElementById('editTotal').value);
+  if (!total || total <= 0) { alert('ብር ያስገቡ'); return; }
+  const idx = db.transactions.findIndex(t => t.id === txId);
+  if (idx === -1) return;
+  // Save old version to history before editing
+  if (!db.trash) db.trash = [];
+  db.trash.unshift({ ...db.transactions[idx], deletedAt: new Date().toISOString(), isEdit: true, deletedFromCustomer: detailCustomerId });
+  if (db.trash.length > 50) db.trash = db.trash.slice(0, 50);
+  // Apply edits
+  db.transactions[idx] = {
+    ...db.transactions[idx],
+    type: document.getElementById('editType').value,
+    date: document.getElementById('editDate').value,
+    item: document.getElementById('editItem').value.trim(),
+    qty: parseFloat(document.getElementById('editQty').value) || 1,
+    price: parseFloat(document.getElementById('editPrice').value) || 0,
+    total,
+    note: document.getElementById('editNote').value.trim(),
+  };
+  saveDb();
+  closeEdit();
+  renderDetail();
+  showToast('✅ ተስተካክሏል!');
+}
+
+// ========== HISTORY / UNDO ==========
+function openHistory() {
+  document.getElementById('historyPanel').style.display = 'flex';
+  renderHistory();
+}
+
+function closeHistory() {
+  document.getElementById('historyPanel').style.display = 'none';
+}
+
+function renderHistory() {
+  const hl = document.getElementById('historyList');
+  const trash = db.trash || [];
+  if (!trash.length) {
+    hl.innerHTML = '<div class="empty"><div class="emoji">🕓</div>የተሰረዘ ግብይት የለም</div>';
+    return;
+  }
+  hl.innerHTML = trash.map((t, i) => {
+    const cust = db.customers.find(c => c.id === t.customerId);
+    const when = new Date(t.deletedAt).toLocaleString('am-ET');
+    return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;background:${t.isEdit?'#fffbe8':'#fff5f5'};">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div>
+          <div style="font-weight:700;font-size:0.92rem;">${t.item||'ክፍያ'} — ${t.total.toLocaleString()} ብር</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:3px;">
+            ${cust?cust.name:'?'} | ${t.date} | ${t.isEdit?'✏️ ከማርም በፊት':'🗑 ተሰርዟል'} | ${when}
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="undoTx(${i})" style="white-space:nowrap;flex-shrink:0;">↩️ መልስ</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function undoTx(idx) {
+  if (!db.trash || !db.trash[idx]) return;
+  const tx = { ...db.trash[idx] };
+  // Remove history fields
+  delete tx.deletedAt; delete tx.isEdit; delete tx.deletedFromCustomer;
+  // Restore — if id already exists (edit undo) replace it, else add
+  const exists = db.transactions.findIndex(t => t.id === tx.id);
+  if (exists >= 0) {
+    db.transactions[exists] = tx;
+  } else {
+    db.transactions.push(tx);
+  }
+  db.trash.splice(idx, 1);
+  saveDb();
+  renderHistory();
+  renderDetail();
+  showToast('↩️ ግብይቱ ተመልሷል!');
+}
+
+// ========== TOAST ==========
+function showToast(msg) {
+  let t = document.getElementById('toastEl');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toastEl';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:12px 22px;border-radius:12px;font-family:"Noto Sans Ethiopic",sans-serif;font-size:0.88rem;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:opacity 0.3s;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.style.opacity = '0', 2800);
+}
+
+// ========== ADD ==========
+function renderAddForm() {
+  const sel = document.getElementById('selCustomer');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">-- ደንበኛ ይምረጡ --</option>' +
+    db.customers.map(c => `<option value="${c.id}" ${c.id===prev?'selected':''}>${c.name}</option>`).join('');
+  selectTxType('debt'); // default
+}
+
+function selectTxType(type) {
+  document.getElementById('selType').value = type;
+  const isDebt = type === 'debt';
+
+  const cardDebt = document.getElementById('typeCardDebt');
+  const cardPay  = document.getElementById('typeCardPay');
+  cardDebt.style.background = isDebt ? 'linear-gradient(135deg,#fff5f5,#ffe0e0)' : '#f0f0f0';
+  cardDebt.style.border     = isDebt ? '2px solid #e74c3c' : '2px solid #ccc';
+  cardPay.style.background  = !isDebt ? 'linear-gradient(135deg,#f0fff6,#d0f5e0)' : '#f0f0f0';
+  cardPay.style.border      = !isDebt ? '2px solid var(--green)' : '2px solid #ccc';
+  document.getElementById('typeCardDebt').querySelector('div:nth-child(2)').style.color = isDebt ? '#c0392b' : '#555';
+  document.getElementById('typeCardPay').querySelector('div:nth-child(2)').style.color  = !isDebt ? 'var(--green)' : '#555';
+
+  document.getElementById('debtFields').style.display = isDebt ? '' : 'none';
+  document.getElementById('addFormTitle').textContent = isDebt ? '🔴 ዱቤ ምዝገባ' : '🟢 ክፍያ ምዝገባ';
+  document.getElementById('totalLabel').textContent   = isDebt ? '💰 ጠቅላላ ብር' : '💰 የክፍያ መጠን (ብር)';
+  document.getElementById('addTxBtn').textContent     = isDebt ? '✅ ዱቤ አስቀምጥ' : '✅ ክፍያ አስቀምጥ';
+  document.getElementById('txTotal').placeholder      = isDebt ? '0' : '0';
+}
+
+function calcTotal() {
+  const qty = parseFloat(document.getElementById('txQty').value) || 0;
+  const price = parseFloat(document.getElementById('txPrice').value) || 0;
+  if (qty && price) document.getElementById('txTotal').value = (qty * price).toFixed(2).replace(/\.00$/,'');
+}
+
+function addTransaction() {
+  const custId = document.getElementById('selCustomer').value;
+  const type = document.getElementById('selType').value;
+  const item = document.getElementById('txItem').value.trim();
+  const qty = parseFloat(document.getElementById('txQty').value) || 1;
+  const price = parseFloat(document.getElementById('txPrice').value) || 0;
+  const total = parseFloat(document.getElementById('txTotal').value) || price * qty;
+  const note = document.getElementById('txNote').value.trim();
+  if (!custId) { alert('ደንበኛ ይምረጡ'); return; }
+  if (!total || total <= 0) { alert('ብር ያስገቡ'); return; }
+  db.transactions.push({ id: uid(), customerId: custId, type, item, qty, price, total, note, date: today() });
+  saveDb();
+  ['txItem','txQty','txPrice','txTotal','txNote'].forEach(id => document.getElementById(id).value = '');
+  const s = document.getElementById('txSuccess');
+  s.style.display = 'block';
+  setTimeout(() => s.style.display = 'none', 2500);
+}
+
+async function addCustomer() {
+  const name = document.getElementById('newName').value.trim();
+  const phone = document.getElementById('newPhone').value.trim();
+  const customPin = document.getElementById('newCustPin') ? document.getElementById('newCustPin').value.trim() : '';
+  if (!name) { alert('ስም ያስገቡ'); return; }
+  const plainPin = customPin.length >= 4 ? customPin : (phone.length >= 4 ? phone.slice(-4) : Math.floor(1000 + Math.random()*9000).toString());
+  const pinHash = await hashPin(plainPin);
+  db.customers.push({ id: uid(), name, phone, pinHash });
+  saveDb();
+  document.getElementById('newName').value = '';
+  document.getElementById('newPhone').value = '';
+  if (document.getElementById('newCustPin')) document.getElementById('newCustPin').value = '';
+  const s = document.getElementById('custSuccess');
+  s.style.display = 'block';
+  s.textContent = '✅ ደንበኛ ተጨምሯል! PIN: ' + plainPin;
+  setTimeout(() => { s.style.display = 'none'; s.textContent = '✅ ደንበኛ ተጨምሯል!'; }, 5000);
+  renderAddForm();
+}
+
+// ========== REPORT ==========
+function renderReport() {
+  const rl = document.getElementById('reportList');
+  const sorted = db.customers.map(c => ({ ...c, debt: getCustomerDebt(c.id) })).sort((a,b) => b.debt - a.debt);
+  if (!sorted.length) {
+    rl.innerHTML = '<div class="empty"><div class="emoji">📊</div>ምንም ደንበኛ የለም</div>';
+    return;
+  }
+  rl.innerHTML = `<table class="tx-table">
+    <thead><tr><th>#</th><th>ስም</th><th>ስልክ</th><th>እዳ (ብር)</th><th>ሁኔታ</th></tr></thead>
+    <tbody>${sorted.map((c,i) => `<tr>
+      <td>${i+1}</td><td><b>${c.name}</b></td><td>${c.phone}</td>
+      <td class="${c.debt>0?'type-debt':'type-pay'}">${c.debt>0?c.debt.toLocaleString():0}</td>
+      <td>${c.debt>0?'🔴 ዕዳ አለ':'✅ ጸዳ'}</td>
+    </tr>`).join('')}</tbody>
+  </table>
+  <div style="margin-top:16px;padding:14px;background:var(--bg);border-radius:10px;font-weight:700;color:var(--red);">
+    ጠቅላላ ዕዳ: ${sorted.reduce((s,c)=>s+Math.max(0,c.debt),0).toLocaleString()} ብር
+  </div>`;
+}
+
+// ========== SETTINGS ==========
+function renderSettings() {
+  // Customers management list
+  const scl = document.getElementById('settingsCustList');
+  if (!db.customers.length) {
+    scl.innerHTML = '<div class="empty"><div class="emoji">👤</div>ደንበኛ የለም</div>';
+    return;
+  }
+  scl.innerHTML = db.customers.map(c => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-weight:700;">${c.name}</div>
+        <div style="font-size:0.8rem;color:var(--muted);">📞 ${c.phone}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="deleteCustomer('${c.id}')">🗑 ሰርዝ</button>
+    </div>
+  `).join('');
+}
+
+function deleteCustomer(custId) {
+  const cust = db.customers.find(c => c.id === custId);
+  if (!confirm(`"${cust.name}" ን ሙሉ ለሙሉ ይሰርዙ?\nሁሉም ግብይቶቻቸው ይጠፋሉ!`)) return;
+  db.customers = db.customers.filter(c => c.id !== custId);
+  db.transactions = db.transactions.filter(t => t.customerId !== custId);
+  saveDb();
+  renderSettings();
+}
+
+async function changeSellerPin() {
+  const old = document.getElementById('oldPin').value.trim();
+  const n1 = document.getElementById('newPin').value.trim();
+  const n2 = document.getElementById('newPin2').value.trim();
+  const msg = document.getElementById('pinMsg');
+
+  const oldH = await hashPin(old);
+  if (oldH !== db.sellerPinHash) {
+    msg.style.display = 'block'; msg.style.color = 'var(--red)';
+    msg.textContent = '❌ አሁን ያለው PIN ትክክል አይደለም'; return;
+  }
+  if (n1.length < 4) {
+    msg.style.display = 'block'; msg.style.color = 'var(--red)';
+    msg.textContent = '❌ አዲስ PIN ቢያንስ 4 ቁጥር ይሁን'; return;
+  }
+  if (n1 !== n2) {
+    msg.style.display = 'block'; msg.style.color = 'var(--red)';
+    msg.textContent = '❌ አዲስ PIN ሁለቱ አይዛመዱም'; return;
+  }
+  db.sellerPinHash = await hashPin(n1);
+  saveDb();
+  ['oldPin','newPin','newPin2'].forEach(id => document.getElementById(id).value = '');
+  msg.style.display = 'block'; msg.style.color = 'var(--green)';
+  msg.textContent = '✅ PIN በተሳካ ሁኔታ ተቀይሯል!';
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
+
+// ========== CUSTOMER VIEW ==========
+function showCustomerView(custId) {
+  // Hide ALL tabs — customer only sees mydebt
+  ['home','customers','add','report','detail','settings'].forEach(t =>
+    document.getElementById('tab-' + t).classList.add('section-hidden')
+  );
+  document.getElementById('tab-mydebt').classList.remove('section-hidden');
+
+  const cust = db.customers.find(c => c.id === custId);
+  document.getElementById('myName').textContent = cust.name;
+
+  const debt = getCustomerDebt(custId);
+  document.getElementById('myBalance').innerHTML = `<div class="balance-big ${debt<=0?'paid':''}">
+    <div class="b-label">አጠቃላይ ዕዳዎ</div>
+    <div class="b-amount">${debt>0?debt.toLocaleString()+' ብር':'✅ ዕዳ የለዎትም'}</div>
+  </div>`;
+
+  // Only show THIS customer's transactions
+  const txs = db.transactions.filter(t => t.customerId === custId).reverse();
+  const ml = document.getElementById('myTxList');
+  if (!txs.length) {
+    ml.innerHTML = '<div class="empty"><div class="emoji">📋</div>ምንም ዝርዝር የለም</div>';
+    return;
+  }
+  ml.innerHTML = `<table class="tx-table">
+    <thead><tr><th>ቀን</th><th>እቃ</th><th>ብዛት</th><th>ዋጋ/ነፍስ</th><th>ድምር</th><th>አይነት</th></tr></thead>
+    <tbody>${txs.map(t => `<tr>
+      <td>${t.date}</td>
+      <td>${t.item||'-'}</td>
+      <td>${t.qty||'-'}</td>
+      <td>${t.price?t.price.toLocaleString():'-'}</td>
+      <td>${t.total.toLocaleString()}</td>
+      <td class="${t.type==='debt'?'type-debt':'type-pay'}">${t.type==='debt'?'🔴 ዱቤ':'🟢 ክፍያ'}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ========== INIT ==========
+const appReady = migrateAndInit();
+
+// ========== PWA INSTALL ==========
+let deferredInstallPrompt = null;
+
+function showInstallButtons() {
+  const b1 = document.getElementById('installBtn');
+  const b2 = document.getElementById('installBtnLogin');
+  if (b1) b1.style.display = 'inline-block';
+  if (b2) b2.style.display = 'inline-block';
+}
+
+function hideInstallButtons() {
+  const b1 = document.getElementById('installBtn');
+  const b2 = document.getElementById('installBtnLogin');
+  if (b1) b1.style.display = 'none';
+  if (b2) b2.style.display = 'none';
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallButtons();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  hideInstallButtons();
+});
+
+async function installApp() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === 'accepted') {
+      deferredInstallPrompt = null;
+      hideInstallButtons();
+    }
+  } else {
+    // iOS / Safari fallback instructions
+    alert('📱 iPhone/iPad ላይ ለመጫን:\n1. Safari ያስፈልጋል\n2. ↑ "Share" ይጫኑ\n3. "Add to Home Screen" ይምረጡ\n\nAndroid Chrome ላይ: ሜኑ → "Add to Home screen"');
+  }
+}
+
+// Inject PWA manifest dynamically
+(function injectManifest() {
+  const manifest = {
+    name: 'የዱቤ መዝገብ',
+    short_name: 'ዱቤ',
+    start_url: window.location.href,
+    display: 'standalone',
+    background_color: '#f4f1eb',
+    theme_color: '#0f4f2f',
+    icons: [{
+      src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f4f2f'/%3E%3Ctext y='72' x='50' text-anchor='middle' font-size='60'%3E📒%3C/text%3E%3C/svg%3E",
+      sizes: '192x192',
+      type: 'image/svg+xml'
+    }]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = url;
+  document.head.appendChild(link);
+})();
+
+// Service Worker for offline support
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE = 'dubet-v1';
+    self.addEventListener('install', e => {
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/'])));
+      self.skipWaiting();
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => new Response('Offline'))));
+    });
+  `;
+  const swBlob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+</script>
+</body>
+</html>
